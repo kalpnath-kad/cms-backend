@@ -4,6 +4,7 @@ import { UploadedFile } from './uploaded-file.entity';
 import { Repository } from 'typeorm';
 import * as XLSX from 'xlsx';
 import { CandidatesService } from '../candidates/candidates.service';
+import { validateExcel } from 'src/shared/utils/excel.util';
 
 @Injectable()
 export class UploadsService {
@@ -13,6 +14,7 @@ export class UploadsService {
   ) {}
 
   async saveFile(file: any, user: any) {
+    await validateExcel(file.path); 
     const uploaded = this.repo.create({
       fileName: file.originalname,
       filePath: file.path,
