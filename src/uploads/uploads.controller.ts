@@ -1,17 +1,23 @@
-import { Controller, Post, UseInterceptors, UploadedFile, UseGuards, Req, Get, Param, Patch } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { JwtAuthGuard } from '../common/jwt-auth.guard';
+import { ApiTags, ApiConsumes, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
+import { UploadFileDto, ApproveFileDto, ParseFileDto } from './dto/uploads.dto';
+import { Controller, Get, Param, Patch, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UploadsService } from './uploads.service';
-import { Roles } from '../common/roles.decorator';
-import { RolesGuard } from '../common/roles.guard';
+import { JwtAuthGuard } from 'src/common/jwt-auth.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Roles } from 'src/common/roles.decorator';
+import { RolesGuard } from 'src/common/roles.guard';
+import { diskStorage } from 'multer';
 
+@ApiTags('Uploads')
+@ApiBearerAuth()
 @Controller('uploads')
 @UseGuards(JwtAuthGuard)
 export class UploadsController {
   constructor(private service: UploadsService) {}
 
   @Post('upload')
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: UploadFileDto })
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
       destination: './uploads',
@@ -19,6 +25,7 @@ export class UploadsController {
     })
   }))
   upload(@UploadedFile() file: any, @Req() req) {
+    console.log(req.user)
     return this.service.saveFile(file, req.user);
   }
 
@@ -30,22 +37,12 @@ export class UploadsController {
   @UseGuards(RolesGuard)
   @Roles('admin')
   @Patch('approve/:id')
-  approve(@Param('id') id: number) {
-    return this.service.approveFile(id);
+  approve(@Param() params: ApproveFileDto) {
+    return this.service.approveFile(params.id);
   }
 
   @Get('parse/:id')
-  async parse(@Param('id') id: number) {
-    const file = await this.service.repo.findOne({ where: { id }, relations: ['uploader'] });
-    return this.service.parseExcel(file.filePath);
+  parse(@Param() params: ParseFileDto) {
+    return this.service.parseExcel(params.id);
   }
-
-  // @Get(':id/download')
-  // @Roles('admin')
-  // async downloadApproved(@Param('id') id: string, @Res() res: Response) {
-  //   const buffer = await this.service.generateExcelForApproved(id);
-  //   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-  //   res.setHeader('Content-Disposition', 'attachment; filename=approved_data.xlsx');
-  //   return res.send(buffer);
-  // }
 }

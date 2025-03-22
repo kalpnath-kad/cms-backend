@@ -16,6 +16,7 @@ import { CandidatesModule } from './candidates/candidates.module';
       database: 'cms_db',
       autoLoadEntities: true,
       synchronize: true,
+      logging: ['query'],
     }),
     AuthModule,
     UsersModule,

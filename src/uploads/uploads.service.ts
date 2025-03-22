@@ -16,7 +16,7 @@ export class UploadsService {
     const uploaded = this.repo.create({
       fileName: file.originalname,
       filePath: file.path,
-      uploader: user
+      uploader: { id: user.userId }
     });
     return this.repo.save(uploaded);
   }
@@ -28,7 +28,7 @@ export class UploadsService {
     return this.repo.find({ where: { uploader: { id: userId } }, relations: ['uploader'] });
   }
 
-  async parseExcel(filePath: string) {
+  async parseExcel(filePath: any) {
     const workbook = XLSX.readFile(filePath);
     const sheetName = workbook.SheetNames[0];
     const data = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
