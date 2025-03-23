@@ -26,4 +26,23 @@ export class CandidatesService {
   async all() {
     return this.repo.find({ relations: ['uploadedFile'] });
   }
+
+  async getCandidates(
+    page: number,
+    limit: number,
+    connectedTemple?: string,
+  ) {
+    const query = this.repo.createQueryBuilder('initiated_candidate');
+
+    if (connectedTemple) {
+      query.andWhere('"initiated_candidate"."connected_temple" = :temple', { temple: connectedTemple });
+    }
+
+    const [data, total] = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getManyAndCount();
+
+    return { data, total };
+  }
 }

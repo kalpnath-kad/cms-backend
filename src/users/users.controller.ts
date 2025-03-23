@@ -15,13 +15,4 @@ export class UsersController {
     return req.user;
   }
 
-  // @UseGuards(JwtAuthGuard)
-  @Get()
-  async getUsers(
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-    @Query('connected_temple') connectedTemple?: string,
-  ) {
-    return this.usersService.getUsers(page, limit, connectedTemple);
-  }
 }

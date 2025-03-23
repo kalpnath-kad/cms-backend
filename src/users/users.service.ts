@@ -19,24 +19,6 @@ export class UsersService {
     return this.repo.findOne({ where: { email } });
   }
 
-  async getUsers(
-    page: number,
-    limit: number,
-    connectedTemple?: string,
-  ) {
-    const query = this.repo.createQueryBuilder('user');
-
-    if (connectedTemple) {
-      query.andWhere('user.connected_temple = :temple', { temple: connectedTemple });
-    }
-
-    const [data, total] = await query
-      .skip((page - 1) * limit)
-      .take(limit)
-      .getManyAndCount();
-
-    return { data, total };
-  }
 }
 
 
