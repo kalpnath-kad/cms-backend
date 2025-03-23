@@ -6,8 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { CandidatesModule } from './candidates/candidates.module';
-import * as crypto from 'crypto';
-(global as any).crypto = crypto;
+// import * as crypto from 'crypto';
+// (global as any).crypto = crypto;
 
 @Module({
   imports: [
