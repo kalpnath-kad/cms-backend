@@ -15,7 +15,7 @@ export class CandidatesController {
   constructor(private service: CandidatesService) {}
   @Get()
   @UseGuards(RolesGuard)
-  @Roles('admin')
+  @Roles('admin', 'user')
   async getCandidates(@Query() query: GetUsersDto) {
     return this.service.getCandidates(query);
   }
